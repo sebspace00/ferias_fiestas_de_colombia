@@ -12,7 +12,24 @@ export interface Event {
   mes: number;
 }
 
+import eventosAntioquia from "./eventos_antioquia.json";
+
+const antioquiaEvents: Event[] = eventosAntioquia.map((e: any, index: number) => ({
+  id: `antioquia-${index + 1}`,
+  nombre: e.nombre || e.evento || "Evento",
+  municipio: e.municipio || "No especificado",
+  territorio: "Antioquia",
+  fechas: e.fechas || "No especificado",
+  descripcion: e.descripcion || "Evento cultural",
+  secretaria: e.secretaria || "No encontrado",
+  telefono: e.telefono || "No encontrado",
+  correo: e.correo || "No encontrado",
+  sitioweb: e.sitioweb || "No encontrado",
+  mes: e.mes || 0,
+}));
+
 export const events: Event[] = [
+  ...antioquiaEvents,
   // QUIBDÓ - CHOCÓ
   {
     id: "quibdo-001",
