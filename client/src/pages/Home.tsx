@@ -158,16 +158,28 @@ export default function Home() {
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {filteredEvents.map((event) => (
-  <div key={event.id}>
+  <div key={event.id} className="relative">
+    
     <EventCard event={event} />
 
-    <button
-      onClick={() =>
-        setEvents(events.filter(e => e.id !== event.id))
-      }
-    >
-      Eliminar
-    </button>
+    <div className="absolute top-2 right-2 flex gap-2">
+      <button
+        onClick={() => alert("Edit coming next")}
+        className="bg-white/80 hover:bg-white text-black text-xs px-2 py-1 rounded shadow"
+      >
+        ✏️
+      </button>
+
+      <button
+        onClick={() =>
+          setEvents(events.filter(e => e.id !== event.id))
+        }
+        className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded shadow"
+      >
+        🗑
+      </button>
+    </div>
+
   </div>
 ))}
             </div>
