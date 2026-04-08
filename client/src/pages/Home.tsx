@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { events, territorios, Event } from "@/data/events";
+import { events as initialEvents, territorios, Event } from "@/data/events";
+import { useState } from "react";
 import { EventCard } from "@/components/EventCard";
 import { EventCalendar } from "@/components/EventCalendar";
 import { EventMap } from "@/components/EventMap";
@@ -15,6 +16,7 @@ import {
 import { Search, Filter, X, Calendar, Map } from "lucide-react";
 
 export default function Home() {
+  const [events, setEvents] = useState(initialEvents);
   const [selectedTerritorio, setSelectedTerritorio] = useState<string>("");
   const [selectedMes, setSelectedMes] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -156,8 +158,18 @@ export default function Home() {
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
+  <div key={event.id}>
+    <EventCard event={event} />
+
+    <button
+      onClick={() =>
+        setEvents(events.filter(e => e.id !== event.id))
+      }
+    >
+      Eliminar
+    </button>
+  </div>
+))}
             </div>
           ) : (
             <div className="text-center py-12 px-4">
