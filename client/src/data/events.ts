@@ -14,7 +14,7 @@ export interface Event {
 
 import eventosAntioquia from "./eventos_antioquia.json";
 
-const antioquiaEvents: Event[] = eventosAntioquia.map((e: any, index: number) => ({
+const antioquiaEvents: Event[] = eventosAntioquia.eventos.map((e: any, index: number) => ({
   id: `antioquia-${index + 1}`,
   nombre: e.nombre_evento || e.evento || e.nombre || "Evento",
   municipio: e.municipio || "No especificado",
