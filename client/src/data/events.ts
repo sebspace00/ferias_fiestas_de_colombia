@@ -433,6 +433,7 @@ export const territorios = [
   "Bajo Cauca",
   "Medellín",
   "Valle de Aburrá",
+  "Antioquia"
 ];
 
 export const municipios = [
@@ -452,4 +453,6 @@ export const municipios = [
   "Copacabana",
   "Girardota",
   "Barbosa",
+  "Abriaquí",
+"Angelópolis",
 ];
