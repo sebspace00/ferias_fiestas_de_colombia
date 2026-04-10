@@ -25,31 +25,20 @@ function EditModal({
 
   return (
     <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 50,
-        background: "rgba(0,0,0,0.45)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "1rem",
-      }}
+      className="fixed inset-0 z-[999] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={onClose}
     >
       <div
-        style={{
-          background: "var(--color-background-primary)",
-          borderRadius: "12px",
-          border: "0.5px solid var(--color-border-secondary)",
-          padding: "1.5rem",
-          width: "100%", maxWidth: "520px",
-          maxHeight: "90vh", overflowY: "auto",
-        }}
+        className="bg-background rounded-xl border border-border w-full max-w-lg max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", borderBottom: "0.5px solid var(--color-border-tertiary)", paddingBottom: "1rem" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: 500, margin: 0 }}>Editar evento</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "20px", cursor: "pointer", color: "var(--color-text-secondary)", lineHeight: 1, padding: "4px 8px" }}>×</button>
+        <div className="flex justify-between items-center p-5 border-b border-border">
+          <h2 className="text-base font-semibold">Editar evento</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xl leading-none px-2">×</button>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div className="p-5 flex flex-col gap-4">
           {[
             { label: "Nombre del evento", key: "nombre" as keyof Event },
             { label: "Municipio", key: "municipio" as keyof Event },
@@ -59,40 +48,28 @@ function EditModal({
             { label: "Sitio web", key: "sitioweb" as keyof Event },
           ].map(({ label, key }) => (
             <div key={key}>
-              <label style={{ fontSize: "12px", color: "var(--color-text-secondary)", display: "block", marginBottom: "4px" }}>{label}</label>
-              <input
-                type="text"
+              <label className="text-xs text-muted-foreground block mb-1">{label}</label>
+              <Input
                 value={String(form[key] ?? "")}
                 onChange={(e) => set(key, e.target.value)}
-                style={{ width: "100%", fontSize: "14px", padding: "8px 10px", boxSizing: "border-box", border: "0.5px solid var(--color-border-secondary)", borderRadius: "8px", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none" }}
               />
             </div>
           ))}
 
           <div>
-            <label style={{ fontSize: "12px", color: "var(--color-text-secondary)", display: "block", marginBottom: "4px" }}>Descripción</label>
+            <label className="text-xs text-muted-foreground block mb-1">Descripción</label>
             <textarea
               rows={4}
               value={form.descripcion}
               onChange={(e) => set("descripcion", e.target.value)}
-              style={{ width: "100%", fontSize: "14px", padding: "8px 10px", boxSizing: "border-box", border: "0.5px solid var(--color-border-secondary)", borderRadius: "8px", background: "var(--color-background-primary)", color: "var(--color-text-primary)", resize: "vertical", outline: "none", fontFamily: "inherit" }}
+              className="w-full text-sm p-2 border border-border rounded-md bg-background text-foreground resize-y outline-none focus:ring-1 focus:ring-primary font-sans"
             />
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "1.25rem", paddingTop: "1rem", borderTop: "0.5px solid var(--color-border-tertiary)" }}>
-          <button
-            onClick={onClose}
-            style={{ flex: 1, padding: "9px", fontSize: "14px", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: "8px", cursor: "pointer", color: "var(--color-text-primary)" }}
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={() => { onSave(form); onClose(); }}
-            style={{ flex: 1, padding: "9px", fontSize: "14px", background: "#D4537E", border: "none", borderRadius: "8px", cursor: "pointer", color: "#fff", fontWeight: 500 }}
-          >
-            Guardar cambios
-          </button>
+        <div className="flex gap-3 p-5 border-t border-border">
+          <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
+          <Button className="flex-1" onClick={() => { onSave(form); onClose(); }}>Guardar cambios</Button>
         </div>
       </div>
     </div>
@@ -166,74 +143,79 @@ export default function Home() {
 
       <main className="container py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
+
           <div className="mb-8 p-5 md:p-6 rounded-lg border border-border bg-card shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Filter className="w-5 h-5 text-primary" />
               <h2 className="font-display text-lg font-bold">Filtros</h2>
               {hasActiveFilters && (
-                <Button onClick={() => { setSelectedTerritorio(""); setSelectedMes(""); setSearchQuery(""); }} variant="ghost" size="sm" className="ml-auto text-xs">
+                <Button
+                  onClick={() => { setSelectedTerritorio(""); setSelectedMes(""); setSearchQuery(""); }}
+                  variant="ghost" size="sm" className="ml-auto text-xs"
+                >
                   <X className="w-3.5 h-3.5 mr-1" /> Limpiar filtros
                 </Button>
               )}
             </div>
             <div className="mb-4 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Buscar por nombre, municipio o descripción..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 text-sm" />
+              <Input
+                placeholder="Buscar por nombre, municipio o descripción..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 text-sm"
+              />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Select value={selectedTerritorio} onValueChange={setSelectedTerritorio}>
-                <SelectTrigger className="text-sm"><SelectValue placeholder="Seleccionar territorio..." /></SelectTrigger>
-                <SelectContent>{territorios.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder="Seleccionar territorio..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {territorios.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
               </Select>
               <Select value={selectedMes} onValueChange={setSelectedMes}>
-                <SelectTrigger className="text-sm"><SelectValue placeholder="Seleccionar mes..." /></SelectTrigger>
-                <SelectContent>{meses.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder="Seleccionar mes..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {meses.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+                </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="font-display text-2xl font-bold text-foreground mb-1">Eventos Encontrados</h2>
-              <p className="text-sm text-muted-foreground">
-                {filteredEvents.length} de {events.length} eventos{hasActiveFilters && " (filtrado)"}
-              </p>
-            </div>
+          <div className="mb-6">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-1">Eventos Encontrados</h2>
+            <p className="text-sm text-muted-foreground">
+              {filteredEvents.length} de {events.length} eventos{hasActiveFilters && " (filtrado)"}
+            </p>
           </div>
 
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {filteredEvents.map((event) => (
-                <div key={event.id} className="relative group">
-                  <EventCard event={event} />
-                  <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div
+                  key={event.id}
+                  className="flex flex-col rounded-lg border border-border bg-card shadow-sm overflow-hidden hover:shadow-md hover:border-primary/30 transition-all duration-300"
+                >
+                  <div className="flex-1">
+                    <EventCard event={event} />
+                  </div>
+                  <div className="flex border-t border-border">
                     <button
                       onClick={() => setEditingEvent(event)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "6px",
-                        background: "var(--color-background-primary)",
-                        border: "0.5px solid var(--color-border-secondary)",
-                        borderRadius: "8px", padding: "7px 14px",
-                        fontSize: "13px", cursor: "pointer",
-                        color: "var(--color-text-primary)",
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                      }}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
                     >
-                      <Pencil size={13} /> Editar
+                      <Pencil size={14} /> Editar
                     </button>
+                    <div className="w-px bg-border" />
                     <button
                       onClick={() => handleDelete(event.id)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "6px",
-                        background: "#FBEAF0",
-                        border: "0.5px solid #ED93B1",
-                        borderRadius: "8px", padding: "7px 14px",
-                        fontSize: "13px", cursor: "pointer",
-                        color: "#993556",
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                      }}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                     >
-                      <Trash2 size={13} /> Eliminar
+                      <Trash2 size={14} /> Eliminar
                     </button>
                   </div>
                 </div>
@@ -246,17 +228,29 @@ export default function Home() {
               </div>
               <h3 className="font-display text-xl font-bold text-foreground mb-2">No se encontraron eventos</h3>
               <p className="text-muted-foreground mb-6">Intenta ajustar tus filtros de búsqueda</p>
-              <Button onClick={() => { setSelectedTerritorio(""); setSelectedMes(""); setSearchQuery(""); }} variant="outline" size="sm">Limpiar filtros</Button>
+              <Button
+                onClick={() => { setSelectedTerritorio(""); setSelectedMes(""); setSearchQuery(""); }}
+                variant="outline" size="sm"
+              >
+                Limpiar filtros
+              </Button>
             </div>
           )}
 
           <div className="mt-12 border-t border-border pt-8">
             <div className="flex gap-2 mb-8">
               {(["eventos", "calendario"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${activeTab === tab ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    activeTab === tab
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
                   {tab === "eventos" ? <Search className="w-4 h-4" /> : <Calendar className="w-4 h-4" />}
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab === "eventos" ? "Eventos" : "Calendario"}
                 </button>
               ))}
             </div>
@@ -265,11 +259,21 @@ export default function Home() {
 
           <div className="mt-12 pt-8 border-t border-border">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-              <div><h4 className="font-semibold text-foreground mb-2">Sobre esta información</h4><p className="text-muted-foreground">Datos recopilados de fuentes oficiales de alcaldías, gobernaciones y sitios de turismo de Colombia.</p></div>
-              <div><h4 className="font-semibold text-foreground mb-2">Territorios Cubiertos</h4><p className="text-muted-foreground">Chocó, Urabá, Bajo Cauca, Medellín, Valle de Aburrá y municipios de Antioquia</p></div>
-              <div><h4 className="font-semibold text-foreground mb-2">Última Actualización</h4><p className="text-muted-foreground">Abril 2026</p></div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Sobre esta información</h4>
+                <p className="text-muted-foreground">Datos recopilados de fuentes oficiales de alcaldías, gobernaciones y sitios de turismo de Colombia.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Territorios Cubiertos</h4>
+                <p className="text-muted-foreground">Chocó, Urabá, Bajo Cauca, Medellín, Valle de Aburrá y municipios de Antioquia</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Última Actualización</h4>
+                <p className="text-muted-foreground">Abril 2026</p>
+              </div>
             </div>
           </div>
+
         </div>
       </main>
     </div>
