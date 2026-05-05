@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { events as initialEvents, Event } from "@/data/events";
+import { Event } from "@/data/events";
 import { EventCard } from "@/components/EventCard";
 import { EventCalendar } from "@/components/EventCalendar";
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,230 @@ import {
 import { Search, Filter, X, Calendar, Pencil, Trash2, Plus } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
-// EVENTOS RISARALDA — fuente: Excel proporcionado
-// IDs con prefijo "rs-" para evitar colisión con events.ts
+// AJUSTE ESTRATÉGICO — 16 ferias priorizadas con datos completos
+// Fuente: Documento "Ajuste Estratégico de Ferias y Fiestas"
 // ═══════════════════════════════════════════════════════════════
-const RISARALDA_EXTRA: Event[] = [
+const STRATEGIC_EVENTS: Event[] = [
+  // ── ANTIOQUIA ──────────────────────────────────────────────
   {
-    id: "rs-pereira-001",
+    id: "st-medellin-001",
+    nombre: "Feria de las Flores",
+    municipio: "Medellín",
+    territorio: "Valle de Aburrá",
+    departamento: "Antioquia",
+    fechas: "31 de julio al 9 de agosto de 2026",
+    descripcion:
+      "La celebración más emblemática de Medellín. Durante 10 días la ciudad se llena de flores, música y tradición con el Desfile de Silleteros como acto central, además de conciertos al aire libre, Festival Nacional de la Trova, Desfile de Autos Clásicos, Feria a Ritmo de Bicicleta, mercados campesinos y actividades para toda la familia.",
+    secretaria: "Secretaría de Cultura Ciudadana de Medellín",
+    telefono: "3808080",
+    correo: "culturacuidadana@medellin.gov.co",
+    sitioweb: "https://www.medellin.gov.co",
+    mes: 7,
+    contacto: "Alcaldía de Medellín",
+  },
+  {
+    id: "st-envigado-001",
+    nombre: "Fiestas del Carriel",
+    municipio: "Envigado",
+    territorio: "Valle de Aburrá",
+    departamento: "Antioquia",
+    fechas: "12 al 20 de julio de 2026",
+    descripcion:
+      "Semana de la Cultura y Fiestas del Carriel en honor al símbolo más representativo de la identidad antioqueña. Incluye Desfile de Silleteros, Festival de la Trova 'Carriel de Oro', Fondas del Carriel, Muestra Gastronómica, conciertos con artistas nacionales, concurso de morcilla y empanada, Fiesta de los Niños y actividades culturales en toda la ciudad.",
+    secretaria: "Secretaría de la Cultura de Envigado",
+    telefono: "3399500",
+    correo: "secretariacultura@envigado.gov.co",
+    sitioweb: "https://www.envigado.gov.co",
+    mes: 7,
+    contacto: "Alcaldía de Envigado",
+  },
+  {
+    id: "st-bello-001",
+    nombre: "Fiestas del Cerro Quita Sol",
+    municipio: "Bello",
+    territorio: "Valle de Aburrá",
+    departamento: "Antioquia",
+    fechas: "17 al 28 de septiembre de 2026",
+    descripcion:
+      "Celebración en honor al cerro tutelar de Bello. Durante 12 días la ciudad ofrece más de 1.500 artistas, Festival de la Trova, Festival de Tango, conciertos gratuitos en la Unidad Deportiva Tulio Ospina, Festival de Danza Urbana, Salón de Artes Visuales, Festival de Sancochos, Feria de Emprendimiento 'Manos que Inspiran' y actividades deportivas en las 11 comunas.",
+    secretaria: "Secretaría de Cultura de Bello",
+    telefono: "4511900",
+    correo: "secretariacultura@bello.gov.co",
+    sitioweb: "https://www.bello.gov.co",
+    mes: 9,
+    contacto: "Alcaldía de Bello",
+  },
+  {
+    id: "st-itagui-001",
+    nombre: "Fiestas de la Pereza",
+    municipio: "Itagüí",
+    territorio: "Valle de Aburrá",
+    departamento: "Antioquia",
+    fechas: "8 al 16 de agosto de 2026",
+    descripcion:
+      "Fiestas de la Industria, el Comercio y la Cultura de Itagüí, que cierran con el mundialmente conocido Día de la Pereza (creado en 1985). Más de 120 eventos gratuitos: conciertos en el Estadio Ditaires, Festival Góspel de Latinoamérica, música andina, desfile de camas, body art, Festival de Cerveza, feria artesanal, tablados barriales y actividades para toda la familia.",
+    secretaria: "Secretaría de Cultura de Itagüí",
+    telefono: "3787878",
+    correo: "cultura@itagui.gov.co",
+    sitioweb: "https://www.itagui.gov.co",
+    mes: 8,
+    contacto: "Alcaldía de Itagüí",
+  },
+  {
+    id: "st-sabaneta-001",
+    nombre: "Fiestas del Plátano",
+    municipio: "Sabaneta",
+    territorio: "Valle de Aburrá",
+    departamento: "Antioquia",
+    fechas: "22 de junio al 1 de julio de 2026",
+    descripcion:
+      "Celebración que honra el cultivo del plátano, motor histórico de la economía de Sabaneta. Nueve días de gastronomía con 'Sabaneta a la Carta' (50+ restaurantes), conciertos con artistas nacionales, Festival de Sancochos, Sabaneta es Comedia, carrera atlética 5K y 10K, exposición de motos clásicas, muralismo urbano y actividades para toda la familia.",
+    secretaria: "Secretaría de Cultura y Turismo de Sabaneta",
+    telefono: "3017878",
+    correo: "cultura@sabaneta.gov.co",
+    sitioweb: "https://www.sabaneta.gov.co",
+    mes: 6,
+    contacto: "Alcaldía de Sabaneta",
+  },
+  {
+    id: "st-caldas-001",
+    nombre: "Fiestas del Aguacero",
+    municipio: "Caldas",
+    territorio: "Valle de Aburrá Sur",
+    departamento: "Antioquia",
+    fechas: "3 al 13 de octubre de 2026",
+    descripcion:
+      "Las Fiestas del Aguacero celebran la identidad del municipio conocido como 'Cielo Roto' del sur del Valle de Aburrá. Incluyen Noche de la Trova, Gran Cantinazo del Despecho, Festival Barrial de Sancochos, Festival Calcanta de Canto, Festival de Tattoo, Feria Artesanal, Encuentro Agropecuario Regional, Gospel Caldas y conciertos con artistas nacionales.",
+    secretaria: "Casa Municipal de la Cultura de Caldas",
+    telefono: "2780740",
+    correo: "cultura@caldasantioquia.gov.co",
+    sitioweb: "https://www.caldasantioquia.gov.co",
+    mes: 10,
+    contacto: "Alcaldía de Caldas",
+  },
+  {
+    id: "st-copacabana-001",
+    nombre: "Fiestas de la Naranja",
+    municipio: "Copacabana",
+    territorio: "Valle de Aburrá Norte",
+    departamento: "Antioquia",
+    fechas: "1 al 4 de noviembre de 2026",
+    descripcion:
+      "Celebración en honor a la naranja, cultivo emblema de Copacabana. Cuatro días de conciertos con artistas nacionales e internacionales en la Unidad Deportiva Principal, Festival del Chorizo, Festival del Sancocho, Desfile de Motos y Bicicletas Clásicas, Caminata Canina, Feria de Emprendimiento y actividades descentralizadas en barrios y veredas. Ingreso gratuito.",
+    secretaria: "Secretaría de Cultura de Copacabana",
+    telefono: "2712500",
+    correo: "cultura@copacabana.gov.co",
+    sitioweb: "https://www.copacabana.gov.co",
+    mes: 11,
+    contacto: "Alcaldía de Copacabana",
+  },
+  {
+    id: "st-apartado-001",
+    nombre: "Fiestas del Banano",
+    municipio: "Apartadó",
+    territorio: "Urabá",
+    departamento: "Antioquia",
+    fechas: "Última semana de noviembre de 2026",
+    descripcion:
+      "Desde 1964, las Fiestas del Banano celebran el producto que define la identidad y economía del Urabá antioqueño. Incluyen el Garruchódromo (competencias con el sistema de transporte bananero), Reinado Nacional del Banano, Festival de Trova y Humor, Festival Afrourbano, Fiesta del Campesino, muestra artesanal, gastronomía de derivados del banano, cabalgata y conciertos.",
+    secretaria: "Alcaldía Municipal de Apartadó",
+    telefono: "8274000",
+    correo: "alcaldia@apartado-antioquia.gov.co",
+    sitioweb: "https://www.apartado-antioquia.gov.co",
+    mes: 11,
+    contacto: "Alcaldía de Apartadó",
+  },
+  {
+    id: "st-caucasia-001",
+    nombre: "Fiestas del Retorno",
+    municipio: "Caucasia",
+    territorio: "Bajo Cauca",
+    departamento: "Antioquia",
+    fechas: "27 al 30 de noviembre de 2026",
+    descripcion:
+      "Celebración anual de la identidad caucasiana que convoca a los hijos del Bajo Cauca a reencontrarse con sus raíces. Incluye desfiles de comparsas, conciertos con artistas nacionales y locales, ferias artesanales, gastronomía típica de la región, actividades culturales y el regreso emotivo de las colonias que habitan en otras ciudades del país.",
+    secretaria: "Secretaría de Cultura de Caucasia",
+    telefono: "8301060",
+    correo: "alcaldia@caucasia-antioquia.gov.co",
+    sitioweb: "https://www.caucasia-antioquia.gov.co",
+    mes: 11,
+    contacto: "Alcaldía de Caucasia",
+  },
+  {
+    id: "st-yarumal-001",
+    nombre: "Fiestas del Yarumo",
+    municipio: "Yarumal",
+    territorio: "Norte de Antioquia",
+    departamento: "Antioquia",
+    fechas: "26 al 29 de junio de 2026",
+    descripcion:
+      "Celebración en honor al árbol de yarumo, que da nombre a la 'Estrella del Norte' antioqueña. Cuatro días de cultura, música y tradición bajo el lema 'Tradición entre montañas', con presentaciones de artistas nacionales, muestras folclóricas, gastronomía típica del norte antioqueño y actividades para toda la familia.",
+    secretaria: "Secretaría de Cultura de Yarumal",
+    telefono: "8870100",
+    correo: "alcaldia@yarumal.gov.co",
+    sitioweb: "https://www.yarumal.gov.co",
+    mes: 6,
+    contacto: "Alcaldía de Yarumal",
+  },
+  {
+    id: "st-rionegro-001",
+    nombre: "Feria Aeronáutica — F-AIR",
+    municipio: "Rionegro",
+    territorio: "Oriente Antioqueño",
+    departamento: "Antioquia",
+    fechas: "7 al 11 de julio de 2027 (bienal — próxima edición)",
+    descripcion:
+      "La Feria Internacional Aeronáutica y Espacial F-AIR Colombia es el evento de aviación más importante de América Latina, realizado en el Aeropuerto José María Córdova. Exhibición de aeronaves civiles y militares, demostraciones acrobáticas del equipo Arpía, conferencias de la industria aeroespacial, zona comercial con expositores internacionales y espectáculos aéreos. Se realiza cada dos años.",
+    secretaria: "Aeronáutica Civil — Fuerza Aeroespacial Colombiana",
+    telefono: "3003000",
+    correo: "info@f-aircolombia.com.co",
+    sitioweb: "https://f-aircolombia.com.co",
+    mes: 7,
+    contacto: "Aeronáutica Civil de Colombia",
+  },
+  {
+    id: "st-laceja-001",
+    nombre: "Fiestas del Toldo, las Bicicletas y las Flores",
+    municipio: "La Ceja",
+    territorio: "Oriente Antioqueño",
+    departamento: "Antioquia",
+    fechas: "3 al 13 de noviembre de 2026",
+    descripcion:
+      "Festividad emblemática del Oriente antioqueño que celebra los toldos tradicionales, la cultura ciclista y los cultivadores de flores. Incluye el Desfile Nacional de Bicicletas en Flor, Festival de la Trova, El Tambo Rock, fondas en la Unidad Deportiva, desfile de silleteros, Media Maratón Internacional, conciertos, exhibición de flores y gastronomía cejeña.",
+    secretaria: "Dirección de Turismo de La Ceja",
+    telefono: "5531915",
+    correo: "turismo@laceja-antioquia.gov.co",
+    sitioweb: "https://www.laceja-antioquia.gov.co",
+    mes: 11,
+    contacto: "Alcaldía de La Ceja",
+  },
+  // ── CHOCÓ ──────────────────────────────────────────────────
+  {
+    id: "st-quibdo-001",
+    nombre: "Fiestas de San Pacho",
+    municipio: "Quibdó",
+    territorio: "Chocó",
+    departamento: "Chocó",
+    fechas: "20 de septiembre al 5 de octubre de 2026",
+    descripcion:
+      "Patrimonio Cultural Inmaterial de la Humanidad (UNESCO 2012). Celebración en honor a San Francisco de Asís que fusiona la tradición católica con la cultura afrodescendiente del Pacífico. Durante 16 días los 12 barrios franciscanos protagonizan alboradas, procesiones, comparsas, desfiles con chirimía chocoana y arriada de banderas. La fiesta más simbólica del Chocó.",
+    secretaria: "Fundación Fiestas Franciscanas de Quibdó",
+    telefono: "3104567890",
+    correo: "fiestasdesanpacho@gmail.com",
+    sitioweb: "https://www.quibdo-choco.gov.co",
+    mes: 9,
+    contacto: "Fundación Fiestas Franciscanas",
+  },
+  // ── RISARALDA ──────────────────────────────────────────────
+  {
+    id: "st-pereira-001",
     nombre: "Fiestas de la Cosecha",
     municipio: "Pereira",
     territorio: "Risaralda",
     departamento: "Risaralda",
-    fechas: "15-31 de agosto",
+    fechas: "15 al 31 de agosto de 2026",
     descripcion:
-      "Celebración aniversaria de Pereira con más de 130 eventos: Carnaval de la Cosecha (Patrimonio Cultural de la Ciudad), conciertos nacionales e internacionales, feria artesanal, gastronomía, desfiles y actividades deportivas.",
+      "Celebración aniversaria de Pereira con más de 130 eventos. El Carnaval de la Cosecha, declarado Patrimonio Cultural de la Ciudad, es el acto central. Conciertos nacionales e internacionales, feria artesanal, gastronomía, desfiles, actividades deportivas y culturales. Uno de los eventos más importantes del Eje Cafetero.",
     secretaria: "Secretaría de Desarrollo Económico y Competitividad",
     telefono: "3128262290",
     correo: "comunicaciones@pereira.gov.co",
@@ -30,192 +241,49 @@ const RISARALDA_EXTRA: Event[] = [
     mes: 8,
     contacto: "Kelly Jhoana García Urueta",
   },
+  // ── QUINDÍO ────────────────────────────────────────────────
   {
-    id: "rs-santarosa-001",
-    nombre: "Fiestas Aniversarias de las Araucarias",
-    municipio: "Santa Rosa de Cabal",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "5-14 de octubre",
+    id: "st-armenia-001",
+    nombre: "Fiestas del Yipao",
+    municipio: "Armenia",
+    territorio: "Quindío",
+    departamento: "Quindío",
+    fechas: "Junio de 2026 (aniversario 12 de junio)",
     descripcion:
-      "Celebración aniversaria de Santa Rosa de Cabal con Festival del Chorizo, Desfile del Yipao, Cabal Fest con artistas nacionales e internacionales y megaconcierto de clausura. Homenaje al legado de los 'hueveros'.",
-    secretaria: "Alcaldía Municipal de Santa Rosa de Cabal",
-    telefono: "3218803071",
-    correo: "alcaldia@santarosadecabal-risaralda.gov.co",
-    sitioweb: "https://www.santarosadecabal-risaralda.gov.co",
-    mes: 10,
-    contacto: "Juan Pablo Toro",
+      "Celebración del aniversario de Armenia con el Concurso Nacional del Yipao como acto central: los tradicionales jeeps Willys del Eje Cafetero desfilan cargados de objetos domésticos en un alarde de equilibrio y destreza. Declarado Patrimonio Cultural de la Nación. Incluye conciertos, feria gastronómica y desfiles culturales.",
+    secretaria: "Secretaría de Cultura de Armenia",
+    telefono: "7412000",
+    correo: "cultura@armenia.gov.co",
+    sitioweb: "https://www.armenia.gov.co",
+    mes: 6,
+    contacto: "Alcaldía de Armenia",
   },
+  // ── CALDAS (DEPARTAMENTO) ───────────────────────────────────
   {
-    id: "rs-apia-001",
-    nombre: "La Calle del Café",
-    municipio: "Apía",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "Noviembre",
+    id: "st-manizales-001",
+    nombre: "Fiestas de Manizales",
+    municipio: "Manizales",
+    territorio: "Caldas",
+    departamento: "Caldas",
+    fechas: "Primera semana de enero de 2027",
     descripcion:
-      "Festival cafetero que reúne a caficultores, baristas y autoridades. Más de 40 marcas de cafés especiales, concursos de catación y Aeropress, feria gastronómica y rueda de negocios.",
-    secretaria: "Alcaldía Municipal de Apía",
-    telefono: "3159269523",
-    correo: "danielerendonv@gmail.com",
-    sitioweb: "https://www.apia-risaralda.gov.co",
-    mes: 11,
-    contacto: "Daniel Rendón",
-  },
-  {
-    id: "rs-belenumbria-001",
-    nombre: "Fiestas de la Caficultura",
-    municipio: "Belén de Umbría",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "Agosto",
-    descripcion:
-      "Celebración aniversaria del primer productor de café de Risaralda. Incluye la Marcha del Arraigo Belumbrense, Festival de Danza Folclórica 'Zarandiando', Noche de Gala y muestras artísticas.",
-    secretaria: "Dirección Municipal de Cultura y Deporte",
-    telefono: "3117486503",
-    correo: "didiego23@hotmail.com",
-    sitioweb: "https://www.belendeumbria-risaralda.gov.co",
-    mes: 8,
-    contacto: "Diego Gómez",
-  },
-  {
-    id: "rs-lavirginia-001",
-    nombre: "Fiestas del Río Cauca",
-    municipio: "La Virginia",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "Agosto",
-    descripcion:
-      "Festival que celebra la identidad del 'Puerto Dulce de Colombia'. Incluye actividades acuáticas, gastronomía típica de pescado (Viudo de Pescado) y cultura ribereña.",
-    secretaria: "Alcaldía Municipal de La Virginia",
-    telefono: "3186529159",
-    correo: "comunicaciones@lavirginia-risaralda.gov.co",
-    sitioweb: "https://www.lavirginia-risaralda.gov.co",
-    mes: 8,
-    contacto: "Diego Mauricio Soto",
-  },
-  {
-    id: "rs-lavirginia-002",
-    nombre: "Fiestas Aniversarias del Sol, Río y la Arena",
-    municipio: "La Virginia",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "Noviembre",
-    descripcion:
-      "Celebración del aniversario de La Virginia con Desfile de Canoas por el río Cauca, Reinado Señorita Virginia, Muestra Artesanal, Muestra Gastronómica, Cabalgata Aniversaria y conciertos con orquestas nacionales.",
-    secretaria: "Alcaldía Municipal de La Virginia",
-    telefono: "3186529159",
-    correo: "comunicaciones@lavirginia-risaralda.gov.co",
-    sitioweb: "https://www.lavirginia-risaralda.gov.co",
-    mes: 11,
-    contacto: "Diego Mauricio Soto",
-  },
-  {
-    id: "rs-santuario-001",
-    nombre: "Fiesta de Disfraces",
-    municipio: "Santuario",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "31 de octubre",
-    descripcion:
-      "Fiesta tradicional de Halloween en Santuario 'La Perla de Tatamá'. Convoca a miles de personas para disfrutar de disfraces, música y celebración cultural en la plaza principal.",
-    secretaria: "Dirección Municipal de Cultura y Deporte",
-    telefono: "3212813601",
-    correo: "jharolguerrerovalencia@gmail.com",
-    sitioweb: "https://www.santuario-risaralda.gov.co",
-    mes: 10,
-    contacto: "Jharol Guerrero Valencia",
-  },
-  {
-    id: "rs-santuario-002",
-    nombre: "Fiestas del Retorno",
-    municipio: "Santuario",
-    territorio: "Risaralda",
-    departamento: "Risaralda",
-    fechas: "22-25 de noviembre",
-    descripcion:
-      "Celebración aniversaria con recibimiento de colonias, bandas sinfónicas, Festival Departamental de Danza Folclórica, Desfile del Yipao y actividades deportivas. Celebra la identidad paisa del municipio.",
-    secretaria: "Dirección Municipal de Cultura y Deporte",
-    telefono: "3212813601",
-    correo: "jharolguerrerovalencia@gmail.com",
-    sitioweb: "https://www.santuario-risaralda.gov.co",
-    mes: 11,
-    contacto: "Jharol Guerrero Valencia",
+      "La Feria de Manizales es uno de los eventos culturales y taurinos más importantes de Colombia y América Latina. Combina corridas de toros en La Macarena, Reinado Internacional del Café, cabalgatas, conciertos con artistas internacionales, desfiles de comparsas, actividades culturales y Feria de Negocios. Se celebra cada año en la primera semana de enero.",
+    secretaria: "Instituto de Cultura y Turismo de Manizales",
+    telefono: "8872000",
+    correo: "cultura@manizales.gov.co",
+    sitioweb: "https://www.manizales.gov.co",
+    mes: 1,
+    contacto: "Alcaldía de Manizales",
   },
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// UTILIDADES
+// Helpers
 // ═══════════════════════════════════════════════════════════════
+const STORAGE_KEY = "ferias_fiestas_strategic_v1";
 
-const STORAGE_KEY = "ferias_colombia_events_v1";
-
-/** Normaliza texto: minúsculas + sin tildes para búsqueda robusta */
 function normalize(str: string): string {
-  return (str ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-/** Infiere departamento desde territorio cuando el campo no existe */
-function inferDepartamento(e: Event): string {
-  if (e.departamento?.trim()) return e.departamento.trim();
-  const t = normalize(e.territorio ?? "");
-  if (t.includes("choco") || t.includes("chocó"))           return "Chocó";
-  if (t.includes("uraba") || t.includes("urabá"))           return "Antioquia";
-  if (t.includes("bajo cauca"))                             return "Antioquia";
-  if (t.includes("medellin") || t.includes("medellín"))     return "Antioquia";
-  if (t.includes("aburrá") || t.includes("abarra") || t.includes("aburra")) return "Antioquia";
-  if (t.includes("risaralda"))                              return "Risaralda";
-  if (t.includes("quindio") || t.includes("quindío"))       return "Quindío";
-  if (t.includes("caldas"))                                 return "Caldas";
-  return "Antioquia";
-}
-
-/**
- * Verifica que un evento tenga todos los datos requeridos para mostrarse.
- * Se excluyen eventos con campos vacíos o con el placeholder "No encontrado".
- */
-const INVALID_VALUES = new Set(["no encontrado", "", "no especificado", "diversas fechas"]);
-
-function isComplete(ev: Event): boolean {
-  const required: (keyof Event)[] = [
-    "nombre", "municipio", "fechas", "descripcion",
-    "secretaria", "telefono", "correo", "sitioweb",
-  ];
-  return required.every((field) => {
-    const val = normalize(String(ev[field] ?? "").trim());
-    return val.length > 0 && !INVALID_VALUES.has(val);
-  });
-}
-
-/**
- * Construye la lista maestra sin duplicados.
- * Prioridad: RISARALDA_EXTRA sobre initialEvents (para que los datos
- * del Excel sobreescriban si hubiera un id duplicado).
- * Deduplicación secundaria por nombre+municipio normalizado.
- * Solo incluye eventos con todos los datos requeridos completos.
- */
-function buildMasterList(base: Event[], extra: Event[]): Event[] {
-  const byId      = new Map<string, Event>();
-  const byNameMun = new Map<string, Event>();
-
-  const add = (ev: Event) => {
-    const enriched = { ...ev, departamento: inferDepartamento(ev) };
-    if (!isComplete(enriched)) return; // ← excluir incompletos
-    const key = `${normalize(enriched.nombre)}|${normalize(enriched.municipio)}`;
-    if (!byNameMun.has(key)) {
-      byId.set(enriched.id, enriched);
-      byNameMun.set(key, enriched);
-    }
-  };
-
-  // Extra primero → tienen prioridad
-  extra.forEach(add);
-  base.forEach(add);
-
-  return Array.from(byId.values());
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 const MESES_MAP: Record<number, string> = {
@@ -228,10 +296,6 @@ const TODOS_LOS_MESES = Object.entries(MESES_MAP).map(([v, l]) => ({
   value: v, label: l, num: parseInt(v),
 }));
 
-// ═══════════════════════════════════════════════════════════════
-// PERSISTENCIA — localStorage
-// ═══════════════════════════════════════════════════════════════
-
 function loadEvents(): Event[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -239,24 +303,17 @@ function loadEvents(): Event[] {
       const parsed: Event[] = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
-  } catch {
-    // Si localStorage falla (SSR, privado, etc.) usamos datos base
-  }
-  return buildMasterList(initialEvents, RISARALDA_EXTRA);
+  } catch { /* SSR o privado */ }
+  return STRATEGIC_EVENTS;
 }
 
 function saveEvents(evs: Event[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(evs));
-  } catch {
-    // Silencioso si falla
-  }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(evs)); } catch { /* silencioso */ }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MODAL AGREGAR / EDITAR
+// Modal Agregar / Editar
 // ═══════════════════════════════════════════════════════════════
-
 function emptyEvent(): Event {
   return {
     id: `custom-${Date.now()}`,
@@ -307,7 +364,6 @@ function EventModal({
       style={{ background: "rgba(0,0,0,0.55)" }} onClick={onClose}>
       <div className="bg-background rounded-xl border border-border w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}>
-
         <div className="flex justify-between items-center p-5 border-b border-border">
           <h2 className="text-base font-semibold">
             {mode === "add" ? "Agregar nuevo evento" : "Editar evento"}
@@ -315,7 +371,6 @@ function EventModal({
           <button onClick={onClose}
             className="text-muted-foreground hover:text-foreground text-xl leading-none px-2">×</button>
         </div>
-
         <div className="p-5 flex flex-col gap-4">
           {fields.map(({ label, key, required }) => (
             <div key={key}>
@@ -328,7 +383,6 @@ function EventModal({
               {errors[key] && <p className="text-xs text-rose-500 mt-1">{errors[key]}</p>}
             </div>
           ))}
-
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Mes del evento</label>
             <select value={form.mes}
@@ -340,7 +394,6 @@ function EventModal({
               ))}
             </select>
           </div>
-
           <div>
             <label className="text-xs text-muted-foreground block mb-1">
               Descripción <span className="text-rose-500">*</span>
@@ -353,7 +406,6 @@ function EventModal({
             {errors.descripcion && <p className="text-xs text-rose-500 mt-1">{errors.descripcion}</p>}
           </div>
         </div>
-
         <div className="flex gap-3 p-5 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
           <Button className="flex-1" onClick={() => { if (validate()) { onSave(form); onClose(); } }}>
@@ -368,12 +420,9 @@ function EventModal({
 // ═══════════════════════════════════════════════════════════════
 // PÁGINA PRINCIPAL
 // ═══════════════════════════════════════════════════════════════
-
 export default function Home() {
-  // ── Estado principal cargado desde localStorage
   const [events, setEventsRaw] = useState<Event[]>(() => loadEvents());
 
-  // Wrapper que persiste automáticamente cada cambio
   const setEvents = (updater: Event[] | ((prev: Event[]) => Event[])) => {
     setEventsRaw((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
@@ -382,13 +431,8 @@ export default function Home() {
     });
   };
 
-  // Si localStorage estaba vacío al montar, aseguramos que los datos se guarden
-  useEffect(() => {
-    saveEvents(events);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { saveEvents(events); }, []); // eslint-disable-line
 
-  // ── Filtros
   const [selectedDepartamento, setSelectedDepartamento] = useState("");
   const [selectedMunicipio,    setSelectedMunicipio]    = useState("");
   const [selectedMes,          setSelectedMes]          = useState("");
@@ -397,7 +441,6 @@ export default function Home() {
   const [editingEvent,         setEditingEvent]         = useState<Event | null>(null);
   const [addingEvent,          setAddingEvent]          = useState(false);
 
-  // ── PASO 1: Búsqueda libre — normalizada (sin tildes, case-insensitive)
   const afterSearch = useMemo(() => {
     if (!searchQuery.trim()) return events;
     const q = normalize(searchQuery);
@@ -408,7 +451,6 @@ export default function Home() {
     );
   }, [events, searchQuery]);
 
-  // ── PASO 2: Departamentos disponibles con conteo
   const depOptions = useMemo(() => {
     const map = new Map<string, number>();
     afterSearch.forEach((e) => {
@@ -420,14 +462,12 @@ export default function Home() {
       .map(([dep, count]) => ({ value: dep, label: dep, count }));
   }, [afterSearch]);
 
-  // ── PASO 3: Filtrar por departamento
   const afterDep = useMemo(() =>
     !selectedDepartamento ? afterSearch
       : afterSearch.filter((e) => e.departamento === selectedDepartamento),
     [afterSearch, selectedDepartamento]
   );
 
-  // ── PASO 4: Municipios disponibles con conteo (solo los del depa seleccionado)
   const munOptions = useMemo(() => {
     const map = new Map<string, number>();
     afterDep.forEach((e) => map.set(e.municipio, (map.get(e.municipio) ?? 0) + 1));
@@ -436,31 +476,24 @@ export default function Home() {
       .map(([mun, count]) => ({ value: mun, label: mun, count }));
   }, [afterDep]);
 
-  // ── PASO 5: Filtrar por municipio
   const afterMun = useMemo(() =>
     !selectedMunicipio ? afterDep
       : afterDep.filter((e) => e.municipio === selectedMunicipio),
     [afterDep, selectedMunicipio]
   );
 
-  // ── PASO 6: Meses disponibles — TODOS los del dataset filtrado hasta aquí
-  //   Solo incluye meses que realmente tienen al menos 1 evento en afterMun
-  //   mes === 0 = "sin fecha" → no aparece en el filtro pero SÍ en resultados
   const mesOptions = useMemo(() => {
     const set = new Set<number>();
     afterMun.forEach((e) => { if (e.mes && e.mes > 0) set.add(e.mes); });
     return TODOS_LOS_MESES.filter((m) => set.has(m.num));
   }, [afterMun]);
 
-  // ── PASO 7: Resultado final
   const filteredEvents = useMemo(() => {
     if (!selectedMes) return afterMun;
-    const mesNum = parseInt(selectedMes);
-    return afterMun.filter((e) => e.mes === mesNum);
+    return afterMun.filter((e) => e.mes === parseInt(selectedMes));
   }, [afterMun, selectedMes]);
 
-  const activeFilterCount = [selectedDepartamento, selectedMunicipio, selectedMes, searchQuery]
-    .filter(Boolean).length;
+  const activeFilterCount = [selectedDepartamento, selectedMunicipio, selectedMes, searchQuery].filter(Boolean).length;
   const hasActiveFilters = activeFilterCount > 0;
 
   const clearFilters = () => {
@@ -470,49 +503,22 @@ export default function Home() {
 
   const handleDepChange = (val: string) => {
     setSelectedDepartamento((p) => p === val ? "" : val);
-    setSelectedMunicipio("");
-    setSelectedMes("");
+    setSelectedMunicipio(""); setSelectedMes("");
   };
   const handleMunChange = (val: string) => {
     setSelectedMunicipio((p) => p === val ? "" : val);
     setSelectedMes("");
   };
-  const handleMesChange = (val: string) => {
-    setSelectedMes((p) => p === val ? "" : val);
-  };
 
-  // ── CRUD con persistencia automática
-  const handleSave = (updated: Event) => {
-    setEvents((p) => p.map((e) => e.id === updated.id ? { ...updated, departamento: inferDepartamento(updated) } : e));
-  };
-
-  const handleAdd = (newEv: Event) => {
-    const enriched = { ...newEv, departamento: inferDepartamento(newEv) };
-    setEvents((p) => {
-      // Verificar duplicado por nombre+municipio antes de agregar
-      const key = `${normalize(enriched.nombre)}|${normalize(enriched.municipio)}`;
-      const exists = p.some((e) =>
-        `${normalize(e.nombre)}|${normalize(e.municipio)}` === key
-      );
-      if (exists) {
-        alert(`Ya existe un evento "${enriched.nombre}" en ${enriched.municipio}. Si deseas modificarlo, usa el botón Editar.`);
-        return p;
-      }
-      return [enriched, ...p];
-    });
-  };
-
+  const handleSave   = (u: Event) => setEvents((p) => p.map((e) => e.id === u.id ? u : e));
+  const handleAdd    = (n: Event) => setEvents((p) => [n, ...p]);
   const handleDelete = (id: string) => {
-    if (confirm("¿Eliminar este evento? Este cambio se guardará permanentemente.")) {
+    if (confirm("¿Eliminar este evento? El cambio se guardará permanentemente."))
       setEvents((p) => p.filter((e) => e.id !== id));
-    }
   };
-
-  // Reset a datos originales (botón de emergencia)
-  const handleReset = () => {
-    if (confirm("¿Restaurar todos los eventos originales? Se perderán los cambios manuales.")) {
-      const fresh = buildMasterList(initialEvents, RISARALDA_EXTRA);
-      setEvents(fresh);
+  const handleReset  = () => {
+    if (confirm("¿Restaurar los 16 eventos originales? Se perderán los cambios manuales.")) {
+      setEvents(STRATEGIC_EVENTS);
       clearFilters();
     }
   };
@@ -538,16 +544,14 @@ export default function Home() {
                 Ferias y Fiestas de Colombia
               </h1>
               <p className="text-sm md:text-base text-muted-foreground">
-                Descubre las celebraciones culturales más representativas del Eje Cafetero, Antioquia y más regiones
+                Ajuste estratégico — 16 celebraciones prioritarias con datos completos
               </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0 mt-1">
-              <Button onClick={() => setAddingEvent(true)} className="flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Agregar evento</span>
-                <span className="sm:hidden">Agregar</span>
-              </Button>
-            </div>
+            <Button onClick={() => setAddingEvent(true)} className="shrink-0 flex items-center gap-2 mt-1">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Agregar evento</span>
+              <span className="sm:hidden">Agregar</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -555,10 +559,8 @@ export default function Home() {
       <main className="container py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
 
-          {/* ── PANEL DE FILTROS ── */}
+          {/* ── FILTROS ── */}
           <div className="mb-8 p-5 md:p-6 rounded-lg border border-border bg-card shadow-sm">
-
-            {/* Cabecera filtros */}
             <div className="flex items-center gap-2 mb-4">
               <Filter className="w-5 h-5 text-primary" />
               <h2 className="font-display text-lg font-bold">Filtros</h2>
@@ -574,7 +576,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Búsqueda — sin tildes, case-insensitive */}
             <div className="mb-4 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               <Input
@@ -591,9 +592,7 @@ export default function Home() {
               )}
             </div>
 
-            {/* Selectores en cascada */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-
               {/* DEPARTAMENTO */}
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5 px-0.5">
@@ -624,7 +623,7 @@ export default function Home() {
                 </Select>
               </div>
 
-              {/* MUNICIPIO — depende de departamento */}
+              {/* MUNICIPIO */}
               <div>
                 <label className={`text-[11px] font-semibold uppercase tracking-wider block mb-1.5 px-0.5 ${
                   selectedDepartamento ? "text-muted-foreground" : "text-muted-foreground/40"
@@ -642,15 +641,9 @@ export default function Home() {
                     </button>
                   )}
                 </label>
-                <Select
-                  value={selectedMunicipio}
-                  onValueChange={handleMunChange}
-                  disabled={!selectedDepartamento}
-                >
+                <Select value={selectedMunicipio} onValueChange={handleMunChange} disabled={!selectedDepartamento}>
                   <SelectTrigger className="text-sm">
-                    <SelectValue placeholder={
-                      selectedDepartamento ? "Todos los municipios" : "← Elige un departamento"
-                    } />
+                    <SelectValue placeholder={selectedDepartamento ? "Todos los municipios" : "← Elige un departamento"} />
                   </SelectTrigger>
                   <SelectContent>
                     {munOptions.map(({ value, label, count }) => (
@@ -667,7 +660,7 @@ export default function Home() {
                 </Select>
               </div>
 
-              {/* MES — solo meses con eventos reales en el contexto actual */}
+              {/* MES */}
               <div>
                 <label className={`text-[11px] font-semibold uppercase tracking-wider block mb-1.5 px-0.5 ${
                   mesOptions.length > 0 ? "text-muted-foreground" : "text-muted-foreground/40"
@@ -685,15 +678,9 @@ export default function Home() {
                     </button>
                   )}
                 </label>
-                <Select
-                  value={selectedMes}
-                  onValueChange={handleMesChange}
-                  disabled={mesOptions.length === 0}
-                >
+                <Select value={selectedMes} onValueChange={(v) => setSelectedMes((p) => p === v ? "" : v)} disabled={mesOptions.length === 0}>
                   <SelectTrigger className="text-sm">
-                    <SelectValue placeholder={
-                      mesOptions.length > 0 ? "Todos los meses" : "Sin eventos disponibles"
-                    } />
+                    <SelectValue placeholder={mesOptions.length > 0 ? "Todos los meses" : "Sin eventos disponibles"} />
                   </SelectTrigger>
                   <SelectContent>
                     {mesOptions.map((m) => (
@@ -704,7 +691,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Chips de filtros activos */}
+            {/* Chips activos */}
             {hasActiveFilters && (
               <div className="flex flex-wrap gap-2 py-3 border-t border-border/50">
                 <span className="text-xs text-muted-foreground self-center mr-1">Activos:</span>
@@ -735,7 +722,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* Barra de resultado */}
+            {/* Barra resultado */}
             <div className={`flex items-center justify-between gap-4 ${hasActiveFilters ? "pt-3" : "pt-3 border-t border-border/50"}`}>
               <p className="text-sm text-muted-foreground">
                 <span className="font-bold text-foreground text-base">{filteredEvents.length}</span>
@@ -744,7 +731,7 @@ export default function Home() {
                 <span className="ml-1.5">eventos{hasActiveFilters ? " coinciden" : " en total"}</span>
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex-1 w-32 h-1.5 rounded-full bg-border overflow-hidden">
+                <div className="w-32 h-1.5 rounded-full bg-border overflow-hidden">
                   <div
                     className="h-full bg-primary rounded-full transition-all duration-500"
                     style={{ width: `${events.length > 0 ? (filteredEvents.length / events.length) * 100 : 0}%` }}
@@ -758,7 +745,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ── CONTADOR Y BOTÓN SECUNDARIO ── */}
+          {/* ── CONTADOR ── */}
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="font-display text-2xl font-bold text-foreground mb-1">Eventos Encontrados</h2>
@@ -772,7 +759,7 @@ export default function Home() {
             </Button>
           </div>
 
-          {/* ── GRID DE EVENTOS ── */}
+          {/* ── GRID ── */}
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {filteredEvents.map((event) => (
@@ -798,9 +785,7 @@ export default function Home() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                 <Search className="w-8 h-8 text-primary/50" />
               </div>
-              <h3 className="font-display text-xl font-bold text-foreground mb-2">
-                No se encontraron eventos
-              </h3>
+              <h3 className="font-display text-xl font-bold text-foreground mb-2">No se encontraron eventos</h3>
               <p className="text-muted-foreground mb-6">Intenta ajustar los filtros</p>
               <div className="flex gap-3 justify-center flex-wrap">
                 <Button onClick={clearFilters} variant="outline" size="sm">Limpiar filtros</Button>
@@ -835,18 +820,18 @@ export default function Home() {
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Sobre esta información</h4>
                 <p className="text-muted-foreground">
-                  Datos recopilados de fuentes oficiales de alcaldías, gobernaciones y sitios de turismo de Colombia.
+                  Datos recopilados de fuentes oficiales: alcaldías, gobernaciones y sitios de turismo de Colombia.
                 </p>
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Territorios Cubiertos</h4>
                 <p className="text-muted-foreground">
-                  Antioquia, Chocó, Risaralda, Quindío y Caldas — Eje Cafetero y región de Urabá.
+                  Antioquia, Chocó, Risaralda, Quindío y Caldas — selección estratégica de {STRATEGIC_EVENTS.length} fiestas prioritarias.
                 </p>
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Última Actualización</h4>
-                <p className="text-muted-foreground">Abril 2026 · {events.length} eventos</p>
+                <p className="text-muted-foreground">Mayo 2026 · {events.length} eventos</p>
               </div>
             </div>
           </div>
