@@ -174,20 +174,37 @@ function inferDepartamento(e: Event): string {
 }
 
 /**
+ * Verifica que un evento tenga todos los datos requeridos para mostrarse.
+ * Se excluyen eventos con campos vacíos o con el placeholder "No encontrado".
+ */
+const INVALID_VALUES = new Set(["no encontrado", "", "no especificado", "diversas fechas"]);
+
+function isComplete(ev: Event): boolean {
+  const required: (keyof Event)[] = [
+    "nombre", "municipio", "fechas", "descripcion",
+    "secretaria", "telefono", "correo", "sitioweb",
+  ];
+  return required.every((field) => {
+    const val = normalize(String(ev[field] ?? "").trim());
+    return val.length > 0 && !INVALID_VALUES.has(val);
+  });
+}
+
+/**
  * Construye la lista maestra sin duplicados.
  * Prioridad: RISARALDA_EXTRA sobre initialEvents (para que los datos
  * del Excel sobreescriban si hubiera un id duplicado).
  * Deduplicación secundaria por nombre+municipio normalizado.
+ * Solo incluye eventos con todos los datos requeridos completos.
  */
 function buildMasterList(base: Event[], extra: Event[]): Event[] {
-  const byId    = new Map<string, Event>();
-  const byNameMun = new Map<string, Event>(); // clave: nombre_norm|municipio_norm
+  const byId      = new Map<string, Event>();
+  const byNameMun = new Map<string, Event>();
 
   const add = (ev: Event) => {
     const enriched = { ...ev, departamento: inferDepartamento(ev) };
+    if (!isComplete(enriched)) return; // ← excluir incompletos
     const key = `${normalize(enriched.nombre)}|${normalize(enriched.municipio)}`;
-    // Si ya existe por nombre+municipio, el que está en el map tiene prioridad
-    // (extra ya fue puesto antes, así que base no lo sobreescribe)
     if (!byNameMun.has(key)) {
       byId.set(enriched.id, enriched);
       byNameMun.set(key, enriched);
